@@ -1,0 +1,78 @@
+{
+  "name": "@dephub/command",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "A type-safe CLI command builder for Node.js, enabling easy creation of commands with arguments, options, subcommands, and handlers.",
+  "types": "./dist/index.d.ts",
+  "main": "./dist/index.js",
+  "bin": {
+    "command": "./dist/cli.js"
+  },
+  "scripts": {
+    "prepublishOnly": "pnpm lint && pnpm check-types && pnpm build",
+    "release": "pnpm publish",
+    "docs": "lineo md 'src/**/*.ts' --outFile code.md --outDir temp",
+    "check-types": "tsc --noEmit --skipLibCheck",
+    "lint": "eslint . --fix --max-warnings 0",
+    "fmt": "prettier --write .",
+    "clean": "rm -rf dist",
+    "build": "vite build",
+    "dev": "vite build -w --mode development"
+  },
+  "keywords": [
+    "cli",
+    "command",
+    "parser",
+    "arguments",
+    "options",
+    "flags",
+    "type-safe",
+    "typescript",
+    "node",
+    "subcommands",
+    "help",
+    "version",
+    "variadic",
+    "inline-options"
+  ],
+  "author": {
+    "name": "Estarlin R",
+    "email": "dev@estarlincito.com",
+    "url": "https://estarlincito.com"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/dephub-js/command#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dephub-js/command.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dephub-js/command/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "packageManager": "pnpm@10.30.3",
+  "devDependencies": {
+    "@dephub/eslint-ts": "^1.0.2",
+    "@dephub/glob": "^1.0.2",
+    "@types/node": "^25.3.3",
+    "eslint": "^10.0.2",
+    "prettier": "^3.8.1",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "@dephub/path": "^1.0.2",
+    "vite-plugin-dts": "^4.5.4"
+  },
+  "dependencies": {
+    "@dephub/table": "^1.0.0"
+  }
+}
