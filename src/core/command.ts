@@ -76,7 +76,7 @@ export class Command<
 
   /**
    * Parses the provided tokens (or default CLI arguments) into a typed CommandInput.
-   * @param tokens - Optional array of tokens to parse; defaults to process/Deno args.
+   * @param tokens - Optional array of tokens to parse; defaults to process.argv.slice(2).
    * @returns The parsed CommandInput with typed args, options, and unparsed tokens.
    */
   parse(tokens?: string[]): CommandInput<Options, Arguments> {
@@ -90,26 +90,10 @@ export class Command<
    * Runs the command with the provided tokens (or default CLI arguments).
    * Parses input, handles flags like --help/--version, executes handlers, and processes subcommands.
    * Automatically adds --help/-h and --version/-v options unless hidden.
-   * @param tokens - Optional array of tokens to run with; defaults to process/Deno args.
+   * @param tokens - Optional array of tokens to run with; defaults to process.argv.slice(2).
    * @returns A Promise that resolves when the command execution completes.
    */
   async run(tokens?: string[]): Promise<void> {
-    // Auto-add --help / --version unless hidden
-    if (!this[$config]().hidden.help) {
-      this.option('--help', {
-        description: `Show help`,
-        kind: 'flag',
-        shortFlag: '-h',
-      });
-    }
-
-    if (!this[$config]().hidden.version) {
-      this.option('--version', {
-        description: `Show version`,
-        kind: 'flag',
-        shortFlag: '-v',
-      });
-    }
     await runner(this[$config](), tokens);
   }
 

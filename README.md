@@ -60,7 +60,7 @@ const cmd = new Command()
   });
 
 try {
-  await clit.run(); // (defaults tokens `process.argv.slice(2)`)
+  await cmd.run(); // (defaults tokens `process.argv.slice(2)`)
 } catch (err) {
   if (err instanceof CommandError) {
     console.error(`\nError: ${err.message}\n`);
@@ -86,7 +86,7 @@ const cmd = new Command()
   });
 
 try {
-  await clit.run(); // (defaults tokens `process.argv.slice(2)`)
+  await cmd.run(); // (defaults tokens `process.argv.slice(2)`)
 } catch (err) {
   if (err instanceof CommandError) {
     console.error(`\nError: ${err.message}\n`);

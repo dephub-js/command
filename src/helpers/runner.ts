@@ -27,6 +27,34 @@ export const runner = async <
   config: CommandConfig<Options, Arguments>,
   tokens?: string[],
 ) => {
+  // Auto-add --help unless hidden
+  if (
+    !config.hidden.help &&
+    !config.options.some((o) => o.longFlag === '--help')
+  ) {
+    config.options.push({
+      description: 'Show help',
+      kind: 'flag',
+      longFlag: '--help',
+      optional: true,
+      shortFlag: '-h',
+    });
+  }
+
+  // Auto-add --version unless hidden
+  if (
+    !config.hidden.version &&
+    !config.options.some((o) => o.longFlag === '--version')
+  ) {
+    config.options.push({
+      description: 'Show version',
+      kind: 'flag',
+      longFlag: '--version',
+      optional: true,
+      shortFlag: '-v',
+    });
+  }
+
   const parsed = parseRuntime(config, tokens);
   const { handlers, hidden, name, subcommands, version } = config;
 

@@ -1,7 +1,7 @@
 {
   "name": "@dephub/command",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A type-safe CLI command builder for Node.js, enabling easy creation of commands with arguments, options, subcommands, and handlers.",
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",

@@ -148,4 +148,3 @@ export const showHelp = <
   printSubcommands();
   console.log('');
 };
-// deno --allow-all test.ts url -h
