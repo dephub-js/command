@@ -1,49 +1,26 @@
-# Publishes the package to npm when a version tag (v*) is pushed.
-# Skips publishing if the exact version already exists.
-name: Publish Package to npmjs
+name: Publish Package
 
 on:
   push:
     tags:
       - 'v*'
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   publish:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      id-token: write
-
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v4
 
-      - name: Enable Corepack
-        run: corepack enable
-
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: '20.x'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
           cache: 'pnpm'
 
-      - name: Check if version exists
-        id: version
-        run: |
-          LOCAL_VERSION=$(node -p "require('./package.json').version")
-          PACKAGE_NAME=$(node -p "require('./package.json').name")
-
-          if npm view $PACKAGE_NAME@$LOCAL_VERSION version >/dev/null 2>&1; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Install dependencies
-        if: steps.version.outputs.exists == 'false'
-        run: pnpm install --frozen-lockfile
-
-      - name: Publish
-        if: steps.version.outputs.exists == 'false'
-        run: pnpm publish --provenance --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm publish --provenance --access public --no-git-checks

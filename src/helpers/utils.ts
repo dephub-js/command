@@ -1,47 +1,70 @@
-/* eslint-disable security/detect-object-injection */
 import type {
   CommandArgument,
   CommandConfig,
   CommandOption,
 } from '@/core/types.js';
 
+import type { CommandSchema } from './parse/input.js';
+
 export type Config = CommandConfig<CommandOption[], CommandArgument[]>;
 
 export const $config = Symbol('config');
 
-export const isFlag = (token: string) => token.startsWith('-');
-export const isInlineOption = (token: string) => token.includes('=');
+export function flattenChain(chains: Config[]): CommandSchema {
+  return {
+    arguments: chains.flatMap((c) => c.arguments || []),
+    hidden: Object.assign({}, ...chains.map((c) => c.hidden)),
+    options: chains.flatMap((c) => c.options || []),
+    version: chains[0].version,
+  };
+}
 
-export const isOption = (token: string) =>
-  isFlag(token) || isInlineOption(token);
-
-export const isSubcommand = (
-  token: string,
-  subcommands: Config['subcommands'],
-) =>
-  subcommands.some((cmd) => {
-    const config = cmd[$config]();
-
-    return config.name === token || config.aliases.includes(token);
-  });
-
-export const kebabToCamelCase = (token: string) =>
-  token
-    .trim()
-    .replace(/^-+/, '')
-    .replace(/-./g, (match) => match.charAt(1).toUpperCase())
-    .replaceAll('-', '');
-
-export const handlerVariadic = (
-  tokens: string[],
-  subcommand: Config['subcommands'],
-) => {
+export function handlerVariadic(tokens: string[]) {
   const collectedValues: string[] = [];
 
   for (const token of tokens) {
-    if (isSubcommand(token, subcommand) || isOption(token)) break;
+    if (isOption(token)) break;
     collectedValues.push(token);
   }
 
   return collectedValues;
-};
+}
+
+export function isFlag(token: string) {
+  return token.startsWith('-');
+}
+
+// // Helper to keep the main loop clean
+export function isGlobalFlag(token: string, hidden: Config['hidden']): boolean {
+  const isHelp = !hidden.help && ['--help', '-h'].includes(token);
+  const isVersion = !hidden.version && ['--version', '-v'].includes(token);
+
+  return isHelp || isVersion;
+}
+
+export function isInlineOption(token: string) {
+  return token.includes('=');
+}
+
+export function isOption(token: string) {
+  return isFlag(token) || isInlineOption(token);
+}
+
+export function isSubcommand(
+  token: string,
+  subcommands: Config['subcommands'],
+) {
+  return subcommands.some((cmd) => {
+    const config = cmd[$config]();
+
+    return config.name === token || config.aliases.includes(token);
+  });
+}
+
+export function kebabToCamelCase(token: string) {
+  return token
+    .trim()
+    .replace(/^-+/, '')
+    .replace(/-./g, (match) => match.charAt(1).toUpperCase())
+    .replaceAll('-', '');
+}

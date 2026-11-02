@@ -1,98 +1,36 @@
-/* eslint-disable no-await-in-loop */
-/* eslint-disable security/detect-object-injection */
-/* eslint-disable no-console */
 import type {
   CommandArgument,
+  CommandArgumentKind,
   CommandConfig,
   CommandInput,
   CommandOption,
 } from '@/core/types.js';
 
-import { showHelp } from './help.js';
-import { parseRuntime } from './parse/index.js';
-import { $config } from './utils.js';
+import type { Config } from './utils.ts';
 
-const input: CommandInput<CommandOption[], CommandArgument[]> = {
-  args: {},
-  options: {},
-  unparsed: [],
-};
+import { parser } from './parse/main.js';
 
-const commandNames: string[] = [];
-
-export const runner = async <
+export async function runner<
   Options extends CommandOption[] = [],
   Arguments extends CommandArgument[] = [],
->(
-  config: CommandConfig<Options, Arguments>,
-  tokens?: string[],
-) => {
-  // Auto-add --help unless hidden
-  if (
-    !config.hidden.help &&
-    !config.options.some((o) => o.longFlag === '--help')
-  ) {
-    config.options.push({
-      description: 'Show help',
-      kind: 'flag',
-      longFlag: '--help',
-      optional: true,
-      shortFlag: '-h',
-    });
-  }
+>(config: CommandConfig<Options, Arguments>, tokens: string[]) {
+  const { chains, handled, ...parsed } = parser(config as Config, tokens);
+  if (handled) return;
 
-  // Auto-add --version unless hidden
-  if (
-    !config.hidden.version &&
-    !config.options.some((o) => o.longFlag === '--version')
-  ) {
-    config.options.push({
-      description: 'Show version',
-      kind: 'flag',
-      longFlag: '--version',
-      optional: true,
-      shortFlag: '-v',
-    });
-  }
-
-  const parsed = parseRuntime(config, tokens);
-  const { handlers, hidden, name, subcommands, version } = config;
-
-  commandNames.push(name);
-
-  Object.assign(input.options, parsed.options);
-  Object.assign(input.args, parsed.args);
-  Object.assign(input.unparsed, parsed.unparsed);
-
-  // Handle --help flags
-  if (parsed.options.help && !hidden.help) {
-    showHelp(config, commandNames);
-    return;
-  }
-
-  // Handle --version flags
-  if (parsed.options.version && !hidden.version) {
-    console.log(version);
-    return;
-  }
-
-  // Run global handlers if defined
-  for (const handler of handlers) {
-    await handler(input, config);
-  }
-
-  // Handle subcommands
-  if (parsed.unparsed.length > 0) {
-    const subName = parsed.unparsed[0];
-    const subcommand = subcommands.find(
-      (cmd) =>
-        cmd[$config]().name === subName ||
-        cmd[$config]().aliases.includes(subName),
-    );
-
-    if (subcommand) {
-      await runner(subcommand[$config](), parsed.unparsed.slice(1));
-      return;
+  for (const { handlers } of chains) {
+    for (const handler of handlers) {
+      // Handlers are middleware; execution order matters.
+      // eslint-disable-next-line no-await-in-loop
+      await handler(
+        parsed as CommandInput<
+          CommandOption[],
+          CommandArgument<string, CommandArgumentKind, boolean>[]
+        >,
+        config as CommandConfig<
+          CommandOption[],
+          CommandArgument<string, CommandArgumentKind, boolean>[]
+        >,
+      );
     }
   }
-};
+}

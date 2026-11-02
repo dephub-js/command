@@ -1,6 +1,7 @@
 # @dephub/command 🛠️
 
-> A type-safe CLI command builder for Node.js, enabling easy creation of commands with arguments, options, subcommands, and handlers.
+> A type-safe CLI command builder for Node.js, enabling easy creation
+> of commands with arguments, options, subcommands, and handlers.
 
 [![NPM version](https://img.shields.io/npm/v/@dephub/command.svg?style=flat)](https://npmjs.org/package/@dephub/command)
 [![ESM-only](https://img.shields.io/badge/ESM-only-brightgreen?style=flat)](https://nodejs.org/)
@@ -12,7 +13,6 @@
 - ⚙️ Automatic handling of --help and --version flags
 - ✅ Built-in validation for configurations and inputs
 - 🔄 Variadic arguments and options for flexible parsing
-- 📦 Seamless integration with Node.js environments
 
 ---
 
@@ -23,83 +23,104 @@
 - yarn: `yarn add @dephub/command`
 - bun: `bun add @dephub/command`
 
+Then import as an ES module:
+
+```typescript
+import { Command } from '@dephub/command';
+```
+
 ---
 
 ## Usage 🎯
 
-### CLI 💻 <!-- if available -->
+Use the `Command` class to build and run CLI applications with arguments,
+options, and subcommands.
 
-This package is a library for building CLI tools. Once you've defined your command, you can run it from the command line using Node.js. For example, save the script below as `mycli.ts` and execute it with `node mycli.js [args]`.
+```ts
+//cli.ts
+import { Command, CommandError } from '@dephub/command';
 
-Example command execution:
-
-```bash
-node run mycli.ts input.txt --output output.txt
-```
-
-### API 🧩
-
-Use the `Command` class to build and configure your CLI. Here's a basic example:
-
-```typescript
-import { Command } from '@dephub/command';
-
-const cmd = new Command()
-  .name('mycli')
-  .description('A simple CLI tool example')
+const http = new Command()
+  .name('http')
   .version('1.0.0')
-  .argument('input', { description: 'Input file path' })
-  .option('--output', {
-    kind: 'value',
-    description: 'Output file path',
-    shortFlag: '-o',
+  .description('A lightweight HTTP client CLI')
+  .argument('url', 'The target URL for the request')
+  .option('--header', {
+    shortFlag: '-H',
+    description: 'Custom header (e.g., "Content-Type: application/json")',
+    optional: true,
+  });
+
+http.command('get', 'Perform a GET request').handler(({ args, options }) => {
+  console.log(`GET ${args.url}`);
+  console.log(`Header: ${options.header}`);
+});
+
+http
+  .command('post', 'Perform a POST request')
+  .option('--body', {
+    shortFlag: '-B',
+    description: 'The JSON body string to send',
   })
   .handler(({ args, options }) => {
-    console.log('Input file:', args.input);
-    console.log('Output file:', options.output);
+    console.log(`POST ${args.url}`);
+    console.log(`Body: ${options.body}`);
   });
 
 try {
-  await cmd.run(); // (defaults tokens `process.argv.slice(2)`)
+  // uses process.argv.slice(2)
+  await http.run();
 } catch (err) {
   if (err instanceof CommandError) {
     console.error(`\nError: ${err.message}\n`);
-    cmd.help();
+    http.help();
     process.exit(1);
   }
   throw err;
 }
 ```
 
-For more advanced usage, including subcommands:
+### Running the CLI 💻
 
-```typescript
-import { Command } from '@dephub/command';
-
-const cmd = new Command()
-  .name('mycli')
-  .description('CLI with subcommands')
-  .command('sub', 'Subcommand description')
-  .argument('arg', 'Subcommand argument')
-  .handler(({ args }) => {
-    console.log('Subcommand arg:', args.arg);
-  });
-
-try {
-  await cmd.run(); // (defaults tokens `process.argv.slice(2)`)
-} catch (err) {
-  if (err instanceof CommandError) {
-    console.error(`\nError: ${err.message}\n`);
-    cmd.help();
-    process.exit(1);
-  }
-  throw err;
-}
+```bash
+node run cli.ts --help
 ```
 
-Run with `mycli sub value` to execute the subcommand.
+```text
+Usage: http <url> [options] [command]
 
----
+A lightweight HTTP client CLI
+
+Arguments:
+  <url>           The target URL for the request
+
+Options:
+--header, -H  [header]             Custom header (e.g., "Content-Type: application/json")
+--help, -h                         Show help
+--version, -v                      Show version
+
+Commands:
+  get             Perform a GET request
+  post            Perform a POST request
+```
+
+```bash
+node run cli.ts get 'https://estarlincito.com' --header "Authorization: Kyumiu"
+```
+
+```text
+GET https://estarlincito.com
+Header: Authorization: Kyumiu
+```
+
+```bash
+node run cli.ts post 'https://estarlincito.com' --body "user: estarlincito"
+```
+
+```text
+POST https://estarlincito.com
+Body: user: estarlincito
+```
 
 ## License 📄
 

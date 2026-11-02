@@ -1,5 +1,3 @@
-/* eslint-disable security/detect-object-injection */
-/* eslint-disable no-nested-ternary */
 /* eslint-disable no-console */
 import { Text } from '@dephub/table';
 
@@ -13,89 +11,57 @@ import type {
 
 import { $config } from './utils.js';
 
-const formatArgumentName = (
-  name: string,
-  kind: CommandArgumentKind,
-  optional = false,
-): string => {
-  const baseName = name.replace(/^--/, '');
-  const suffix = kind === 'variadic' ? '...' : '';
-  const format = `${baseName}${suffix}`;
-
-  return optional ? `[${format}]` : `<${format}>`;
-};
-
-const formatOptionFlag = (
-  flag: string,
-  kind: CommandOptionKind,
-  optional = false,
-): string => {
-  const normalizedFlag = flag.startsWith('-')
-    ? flag
-    : flag.length === 1
-      ? `-${flag}`
-      : `--${flag}`;
-
-  if (kind === 'inline') {
-    return optional ? `${normalizedFlag}[=value]` : `${normalizedFlag}=value`;
-  }
-
-  return normalizedFlag;
-};
-
-export const showHelp = <
+export function showHelp<
   Options extends CommandOption[] = [],
   Arguments extends CommandArgument[] = [],
->(
-  {
-    arguments: args,
-    description: desc,
-    options,
-    subcommands,
-  }: CommandConfig<Options, Arguments>,
-  commandNames: string[] = [],
-) => {
-  const printUsage = () => {
-    const commandsStr = subcommands.length > 0 ? '[command]' : '';
-    const optionsStr = options.length > 0 ? '[options]' : '';
-    const argsStr = args
+>(chains: Array<CommandConfig<Options, Arguments>>) {
+  const fullCommandName = chains.map((c) => c.name);
+  const allOptions = chains.flatMap((c) => c.options ?? []);
+  const leafCommand = chains[chains.length - 1];
+  const { description } = leafCommand;
+
+  function printUsage() {
+    const commandsStr = leafCommand.subcommands.length > 0 ? '[command]' : '';
+    const optionsStr = allOptions.length > 0 ? '[options]' : '';
+    const argsStr = leafCommand.arguments
       .map(({ kind, name, optional }) =>
         formatArgumentName(name, kind, optional),
       )
       .join(' ');
 
     console.log(
-      `\nUsage: ${commandNames.join(' ')}${argsStr ? ` ${argsStr}` : ''}${
+      `\nUsage: ${fullCommandName.join(' ')}${argsStr ? ` ${argsStr}` : ''}${
         optionsStr ? ` ${optionsStr}` : ''
       }${commandsStr ? ` ${commandsStr}` : ''}`,
     );
-  };
+  }
 
-  const printDescription = () => {
-    if (desc) {
-      console.log(`\n${desc}`);
+  function printDescription() {
+    if (description) {
+      console.log(`\n${description}`);
     }
-  };
+  }
 
-  const printArguments = () => {
+  function printArguments() {
+    const args = chains.flatMap((c) => c.arguments || []);
     if (args.length > 0) {
       console.log('\nArguments:');
-      args.forEach(({ description, kind, name, optional }) => {
+      args.forEach(({ description: description_, kind, name, optional }) => {
         console.log(
           `  ${formatArgumentName(name, kind, optional).padEnd(15)} ${
-            description ?? ''
+            description_ ?? ''
           }`,
         );
       });
     }
-  };
+  }
 
-  const printOptions = () => {
-    if (options.length > 0) {
+  function printOptions() {
+    if (allOptions.length > 0) {
       console.log('\nOptions:');
       const table = new Text();
 
-      options.forEach((opt) => {
+      allOptions.forEach((opt) => {
         const normalizedLongFlag =
           opt.kind === 'flag'
             ? formatOptionFlag(opt.longFlag, opt.kind)
@@ -122,12 +88,12 @@ export const showHelp = <
       table.setColumnWidth(1, 20);
       console.log(table.build());
     }
-  };
+  }
 
-  const printSubcommands = () => {
-    if (subcommands.length > 0) {
+  function printSubcommands() {
+    if (leafCommand.subcommands.length > 0) {
       console.log('\nCommands:');
-      subcommands.forEach((cmd) => {
+      leafCommand.subcommands.forEach((cmd) => {
         const cmdCtx = cmd[$config]();
 
         const aliases =
@@ -139,7 +105,7 @@ export const showHelp = <
         );
       });
     }
-  };
+  }
 
   printUsage();
   printDescription();
@@ -147,4 +113,34 @@ export const showHelp = <
   printOptions();
   printSubcommands();
   console.log('');
-};
+}
+
+function formatArgumentName(
+  name: string,
+  kind: CommandArgumentKind,
+  optional = false,
+): string {
+  const baseName = name.replace(/^--/, '');
+  const suffix = kind === 'variadic' ? '...' : '';
+  const format = `${baseName}${suffix}`;
+
+  return optional ? `[${format}]` : `<${format}>`;
+}
+
+function formatOptionFlag(
+  flag: string,
+  kind: CommandOptionKind,
+  optional = false,
+): string {
+  const normalizedFlag = flag.startsWith('-')
+    ? flag
+    : flag.length === 1
+      ? `-${flag}`
+      : `--${flag}`;
+
+  if (kind === 'inline') {
+    return optional ? `${normalizedFlag}[=value]` : `${normalizedFlag}=value`;
+  }
+
+  return normalizedFlag;
+}

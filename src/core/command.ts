@@ -1,13 +1,11 @@
-/* eslint-disable security/detect-object-injection */
 import { showHelp } from '@/helpers/help.js';
-import { parseRuntime } from '@/helpers/parse/index.js';
+import { type ParsedCommand, parser } from '@/helpers/parse/main.js';
 import { runner } from '@/helpers/runner.js';
-import { $config } from '@/helpers/utils.js';
+import { $config, type Config } from '@/helpers/utils.js';
 
 import type {
   CommandArgument,
   CommandHideKind,
-  CommandInput,
   CommandOption,
 } from './types.js';
 
@@ -20,20 +18,20 @@ import { CommandBuilder } from './builder.js';
  * @template Arguments - An array of CommandArgument definitions for the command.
  * @example
  * ```typescript
- * import { Command } from '@dep/command';
+ * import { Command } from '@dephub/command';
  *
  * const cmd = new Command()
  *   .name('mycli')
  *   .description('A simple CLI tool example')
  *   .version('1.0.0')
  *   .argument('input', { description: 'Input file path' })
- *   .option('--output', { kind: 'value', description: 'Output file path', shortFlag: '-o' })
+ *   .option('--output', { description: 'Output file path', shortFlag: '-o' })
  *   .handler(({ args, options }) => {
  *     console.log('Input file:', args.input);
  *     console.log('Output file:', options.output);
  *   });
  *
- * cmd.run();
+ * await cmd.run();
  * ```
  */
 export class Command<
@@ -55,7 +53,7 @@ export class Command<
    */
   help() {
     if (!this[$config]().hidden.help) {
-      showHelp(this[$config]());
+      showHelp([this[$config]()]);
     }
   }
 
@@ -76,24 +74,37 @@ export class Command<
 
   /**
    * Parses the provided tokens (or default CLI arguments) into a typed CommandInput.
-   * @param tokens - Optional array of tokens to parse; defaults to process.argv.slice(2).
-   * @returns The parsed CommandInput with typed args, options, and unparsed tokens.
+   * @param tokens - Optional array of tokens to run with; defaults to process.
+   * @returns The parsed CommandInput with typed args, options, handled, chains, and unparsed tokens.
    */
-  parse(tokens?: string[]): CommandInput<Options, Arguments> {
-    return parseRuntime(this[$config](), tokens ?? []) as CommandInput<
-      Options,
-      Arguments
-    >;
+  parse(tokens: string[] = process.argv.slice(2)): ParsedCommand {
+    return parser(this[$config]() as Config, tokens);
   }
 
   /**
    * Runs the command with the provided tokens (or default CLI arguments).
    * Parses input, handles flags like --help/--version, executes handlers, and processes subcommands.
    * Automatically adds --help/-h and --version/-v options unless hidden.
-   * @param tokens - Optional array of tokens to run with; defaults to process.argv.slice(2).
+   * @param tokens - Optional array of tokens to run with; defaults to process.
    * @returns A Promise that resolves when the command execution completes.
    */
-  async run(tokens?: string[]): Promise<void> {
+  async run(tokens: string[] = process.argv.slice(2)): Promise<void> {
+    // Auto-add --help / --version unless hidden
+    if (!this[$config]().hidden.help) {
+      this.option('--help', {
+        description: `Show help`,
+        kind: 'flag',
+        shortFlag: '-h',
+      });
+    }
+
+    if (!this[$config]().hidden.version) {
+      this.option('--version', {
+        description: `Show version`,
+        kind: 'flag',
+        shortFlag: '-v',
+      });
+    }
     await runner(this[$config](), tokens);
   }
 

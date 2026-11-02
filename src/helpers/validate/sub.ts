@@ -1,10 +1,9 @@
-/* eslint-disable security/detect-object-injection */
 import { CommandError } from '@/helpers/error.js';
 import { $config, type Config } from '@/helpers/utils.js';
 
-import { validateConfig } from './index.js';
+import { validateConfig } from './main.js';
 
-export const validateSubcommands = (subcommands: Config['subcommands']) => {
+export function validateSubcommands(subcommands: Config['subcommands']) {
   const subcommandNames = new Set<string>();
 
   for (const subCmd of subcommands) {
@@ -21,4 +20,4 @@ export const validateSubcommands = (subcommands: Config['subcommands']) => {
     subcommandNames.add(subConfig.name);
     validateConfig(subConfig);
   }
-};
+}

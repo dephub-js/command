@@ -1,4 +1,3 @@
-/* eslint-disable security/detect-object-injection */
 import { $config } from '@/helpers/utils.js';
 
 import type { Command } from './command.js';
@@ -148,7 +147,7 @@ export class CommandBuilder<
       ? Partial<
           Pick<CommandOption<L, K, O>, 'description' | 'kind' | 'shortFlag'>
         >
-      : Partial<Omit<CommandOption<L, K, O>, 'shortFlag'>>,
+      : Partial<CommandOption<L, K, O>>,
   ): With<[...Options, CommandOption<L, K, O>], Arguments>[Kind] {
     const option: CommandOption<L, 'value', false> = {
       kind: 'value',

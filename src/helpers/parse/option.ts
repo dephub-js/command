@@ -12,15 +12,14 @@ export interface ParsedOption {
   option: Record<string, boolean | string | string[]>;
 }
 
-export const parseCommandOption = (
+export function parseOption(
   token: string,
   tokens: string[],
-  config: Config,
-): ParsedOption => {
+  options: Config['options'],
+): ParsedOption {
   const flagName = kebabToCamelCase(token);
-  const optionDefs = config.options;
 
-  const matchedOption = optionDefs.find(({ longFlag, shortFlag }) => {
+  const matchedOption = options.find(({ longFlag, shortFlag }) => {
     if (longFlag) {
       if (
         kebabToCamelCase(longFlag) === flagName ||
@@ -76,10 +75,7 @@ export const parseCommandOption = (
     }
     case 'variadic': {
       if (isFlag(token)) {
-        optionValue = handlerVariadic(
-          tokens.slice(index + 1),
-          config.subcommands,
-        );
+        optionValue = handlerVariadic(tokens.slice(index + 1));
         consumed = optionValue.length + 1;
       }
       break;
@@ -94,4 +90,4 @@ export const parseCommandOption = (
     consumed,
     option: { [kebabToCamelCase(matchedOption.longFlag)]: optionValue },
   };
-};
+}

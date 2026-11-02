@@ -12,7 +12,7 @@ start:   ; $(RUN) start $(ARGS) ## Run the app in production mode
 lint:    ; $(RUN) lint          ## Run linter (ESLint/Prettier)
 fmt:     ; $(RUN) fmt           ## Run formater (Prettier)
 test:    ; $(RUN) test $(ARGS)  ## Run test suite
-types:   ; $(RUN) check-types   ## Run TypeScript type checking
+types:   ; $(RUN) check         ## Run TypeScript type checking
 clean:   ; $(RUN) clean         ## Remove build artifacts and temp files
 pack:    ; $(RUN) pack          ## Create a package tarball
 docs:    ; $(RUN) docs          ## Generate technical documentation
