@@ -8,6 +8,7 @@ import type {
   CommandHandler,
   CommandOption,
   CommandOptionKind,
+  ExecutionOptionValues,
 } from './types.js';
 
 /**
@@ -46,13 +47,13 @@ export class CommandBuilder<
     aliases: [],
     arguments: [] as unknown as Arguments,
     description: '',
-    handlers: [],
     hidden: {
       help: false,
       version: false,
     },
     name: '',
     options: [] as unknown as Options,
+    steps: [],
     subcommands: [],
     version: '1.0.0',
   };
@@ -123,12 +124,32 @@ export class CommandBuilder<
   }
 
   /**
+   * Adds an external command execution to this command's execution pipeline.
+   *
+   * @param command - The executable command to run.
+   * @param args - Arguments passed to the executable.
+   * @param options - Options controlling the execution process.
+   * @returns The builder instance for chaining.
+   */
+  exec(
+    command: string,
+    args: Array<string> = [],
+    options: Partial<ExecutionOptionValues> = {},
+  ): this {
+    this.#config.steps.push({
+      execution: { args, command, options },
+      kind: 'execution',
+    });
+    return this;
+  }
+
+  /**
    * Adds a handler function to execute when the command is run.
    * @param fn - The CommandHandler function.
    * @returns The builder instance for chaining.
    */
   handler(fn: CommandHandler<Options, Arguments>): this {
-    this.#config.handlers.push(fn);
+    this.#config.steps.push({ handler: fn, kind: 'handler' });
     return this;
   }
 

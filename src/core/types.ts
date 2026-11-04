@@ -1,3 +1,5 @@
+import type { SpawnOptions } from 'node:child_process';
+
 import type { CommandBuilder } from './builder.js';
 
 /**
@@ -47,18 +49,30 @@ export interface CommandConfig<
   arguments: Arguments;
   /** A description of the command for help output. */
   description: string;
-  /** Handler functions to execute when the command is run. */
-  handlers: CommandHandler<Options, Arguments>[];
   /** Flags to hide certain built-in features like help or version. */
   hidden: Record<CommandHideKind, boolean>;
   /** The name of the command. */
   name: string;
   /** Defined options for the command. */
   options: Options;
+  /**  */
+  steps: CommandStep<Options, Arguments>[];
   /** Subcommands under this command. */
   subcommands: CommandBuilder<Options, Arguments>[];
   /** The version of the command. */
   version: string;
+}
+
+/**
+ * Represents an external command execution.
+ */
+export interface CommandExecution {
+  /** Arguments passed to the executable. */
+  args?: Array<string>;
+  /** The executable command to run. */
+  command: string;
+  /** Options controlling the execution process. */
+  options: Partial<ExecutionOptionValues>;
 }
 
 /**
@@ -157,6 +171,39 @@ export type CommandOption<
  * - 'variadic': An option that takes multiple values (e.g., --include file1 file2).
  */
 export type CommandOptionKind = 'flag' | 'inline' | 'value' | 'variadic';
+
+/**
+ * Represents an ordered step in a command execution pipeline.
+ *
+ * A step can either execute an external process or invoke a command handler.
+ *
+ * @template Options - An array of CommandOption definitions.
+ * @template Arguments - An array of CommandArgument definitions.
+ */
+export type CommandStep<
+  Options extends CommandOption[] = CommandOption[],
+  Arguments extends CommandArgument[] = CommandArgument[],
+> =
+  | {
+      /** The external command execution to perform. */
+      execution: CommandExecution;
+      /** Identifies this step as an external command execution. */
+      kind: 'execution';
+    }
+  | {
+      /** The handler function to invoke. */
+      handler: CommandHandler<Options, Arguments>;
+      /** Identifies this step as a command handler. */
+      kind: 'handler';
+    };
+
+/**
+ * Configuration options for executing external commands.
+ */
+export interface ExecutionOptionValues extends SpawnOptions {
+  /** Character encoding for stdout/stderr streams. Defaults to 'utf8'. */
+  encoding?: BufferEncoding;
+}
 
 /**
  * Utility type to convert a kebab-case string (e.g., '--my-flag' or 'my-flag') to camelCase (e.g., 'myFlag').

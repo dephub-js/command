@@ -23,12 +23,6 @@
 - yarn: `yarn add @dephub/command`
 - bun: `bun add @dephub/command`
 
-Then import as an ES module:
-
-```typescript
-import { Command } from '@dephub/command';
-```
-
 ---
 
 ## Usage 🎯
@@ -37,7 +31,7 @@ Use the `Command` class to build and run CLI applications with arguments,
 options, and subcommands.
 
 ```ts
-//cli.ts
+//cli.js
 import { Command, CommandError } from '@dephub/command';
 
 const http = new Command()
@@ -51,10 +45,15 @@ const http = new Command()
     optional: true,
   });
 
-http.command('get', 'Perform a GET request').handler(({ args, options }) => {
-  console.log(`GET ${args.url}`);
-  console.log(`Header: ${options.header}`);
-});
+http
+  .command('get', 'Perform a GET request')
+  .handler(({ args, options }) => {
+    console.log(`GET ${args.url}`);
+    console.log(`Header: ${options.header}`);
+  })
+  .exec('curl', ['-I', 'https://example.com'], {
+    stdio: 'inherit',
+  });
 
 http
   .command('post', 'Perform a POST request')
@@ -83,7 +82,7 @@ try {
 ### Running the CLI 💻
 
 ```bash
-node run cli.ts --help
+node run cli.js --help
 ```
 
 ```text
@@ -105,7 +104,7 @@ Commands:
 ```
 
 ```bash
-node run cli.ts get 'https://estarlincito.com' --header "Authorization: Kyumiu"
+node run cli.js get 'https://estarlincito.com' --header "Authorization: Kyumiu"
 ```
 
 ```text
@@ -114,7 +113,7 @@ Header: Authorization: Kyumiu
 ```
 
 ```bash
-node run cli.ts post 'https://estarlincito.com' --body "user: estarlincito"
+node run cli.js post 'https://estarlincito.com' --body "user: estarlincito"
 ```
 
 ```text

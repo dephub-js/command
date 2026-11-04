@@ -1,3 +1,5 @@
+/* eslint-disable no-await-in-loop */
+// Handlers are middleware; execution order matters.
 import type {
   CommandArgument,
   CommandArgumentKind,
@@ -8,20 +10,24 @@ import type {
 
 import type { Config } from './utils.ts';
 
+import { execution } from './execution.js';
 import { parser } from './parse/main.js';
 
 export async function runner<
   Options extends CommandOption[] = [],
   Arguments extends CommandArgument[] = [],
->(config: CommandConfig<Options, Arguments>, tokens: string[]) {
+>(config: CommandConfig<Options, Arguments>, tokens: string[]): Promise<void> {
   const { chains, handled, ...parsed } = parser(config as Config, tokens);
   if (handled) return;
 
-  for (const { handlers } of chains) {
-    for (const handler of handlers) {
-      // Handlers are middleware; execution order matters.
-      // eslint-disable-next-line no-await-in-loop
-      await handler(
+  for (const { steps } of chains) {
+    for (const step of steps) {
+      if (step.kind === 'execution') {
+        await execution(step.execution);
+        continue;
+      }
+
+      await step.handler(
         parsed as CommandInput<
           CommandOption[],
           CommandArgument<string, CommandArgumentKind, boolean>[]

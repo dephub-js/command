@@ -13,9 +13,12 @@ import { CommandBuilder } from './builder.js';
 
 /**
  * The main Command class for defining and executing CLI commands.
+ *
  * Extends CommandBuilder to provide additional methods for configuration and execution.
+ *
  * @template Options - An array of CommandOption definitions for the command.
  * @template Arguments - An array of CommandArgument definitions for the command.
+ *
  * @example
  * ```typescript
  * import { Command } from '@dephub/command';
@@ -29,6 +32,9 @@ import { CommandBuilder } from './builder.js';
  *   .handler(({ args, options }) => {
  *     console.log('Input file:', args.input);
  *     console.log('Output file:', options.output);
+ *   })
+ *   .exec('npm', ['run', 'build'], {
+ *     stdio: 'inherit',
  *   });
  *
  * await cmd.run();
