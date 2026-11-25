@@ -1,15 +1,15 @@
-import { showHelp } from '@/helpers/help.js';
-import { type ParsedCommand, parser } from '@/helpers/parse/main.js';
-import { runner } from '@/helpers/runner.js';
-import { $config, type Config } from '@/helpers/utils.js';
+import { showHelp } from '#/helpers/help.ts';
+import { type ParsedCommand, parser } from '#/helpers/parse/main.ts';
+import { runner } from '#/helpers/runner.ts';
+import { $config, type Config } from '#/helpers/utils.ts';
 
 import type {
   CommandArgument,
   CommandHideKind,
   CommandOption,
-} from './types.js';
+} from './types.ts';
 
-import { CommandBuilder } from './builder.js';
+import { CommandBuilder } from './builder.ts';
 
 /**
  * The main Command class for defining and executing CLI commands.

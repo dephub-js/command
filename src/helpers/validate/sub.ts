@@ -1,7 +1,7 @@
-import { CommandError } from '@/helpers/error.js';
-import { $config, type Config } from '@/helpers/utils.js';
+import { CommandError } from '#/helpers/error.ts';
+import { $config, type Config } from '#/helpers/utils.ts';
 
-import { validateConfig } from './main.js';
+import { validateConfig } from './main.ts';
 
 export function validateSubcommands(subcommands: Config['subcommands']) {
   const subcommandNames = new Set<string>();

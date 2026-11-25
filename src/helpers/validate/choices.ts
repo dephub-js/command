@@ -1,4 +1,4 @@
-import { CommandError } from '@/helpers/error.js';
+import { CommandError } from '#/helpers/error.ts';
 
 export function validateChoices(
   variant: 'argument' | 'option',

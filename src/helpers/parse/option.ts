@@ -1,11 +1,11 @@
-import { CommandError } from '@/helpers/error.js';
+import { CommandError } from '#/helpers/error.ts';
 import {
   type Config,
   handlerVariadic,
   isFlag,
   isInlineOption,
   kebabToCamelCase,
-} from '@/helpers/utils.js';
+} from '#/helpers/utils.ts';
 
 export interface ParsedOption {
   consumed: number;

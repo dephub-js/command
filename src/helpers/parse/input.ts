@@ -1,9 +1,9 @@
 /* eslint-disable no-console */
-import { showHelp } from '@/helpers/help.js';
-import { type Config, isOption } from '@/helpers/utils.js';
+import { showHelp } from '#/helpers/help.ts';
+import { type Config, isOption } from '#/helpers/utils.ts';
 
-import { parseArgument } from './argument.js';
-import { parseOption } from './option.js';
+import { parseArgument } from './argument.ts';
+import { parseOption } from './option.ts';
 
 export type CommandSchema = Pick<
   Config,

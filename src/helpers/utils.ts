@@ -2,9 +2,9 @@ import type {
   CommandArgument,
   CommandConfig,
   CommandOption,
-} from '@/core/types.js';
+} from '#/core/types.ts';
 
-import type { CommandSchema } from './parse/input.js';
+import type { CommandSchema } from './parse/input.ts';
 
 export type Config = CommandConfig<CommandOption[], CommandArgument[]>;
 

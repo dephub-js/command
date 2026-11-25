@@ -1,10 +1,10 @@
-import type { Config } from '@/helpers/utils.js';
+import type { Config } from '#/helpers/utils.ts';
 
-import { validateArguments } from './argument.js';
-import { validateAliases, validateName } from './name.js';
-import { validateOptions } from './option.js';
-import { validateSteps } from './step.js';
-import { validateSubcommands } from './sub.js';
+import { validateArguments } from './argument.ts';
+import { validateAliases, validateName } from './name.ts';
+import { validateOptions } from './option.ts';
+import { validateSteps } from './step.ts';
+import { validateSubcommands } from './sub.ts';
 
 export function validateConfig(config: Config): void {
   validateName(config.name);

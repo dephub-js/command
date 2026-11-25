@@ -1,6 +1,6 @@
-import { $config } from '@/helpers/utils.js';
+import { $config } from '#/helpers/utils.ts';
 
-import type { Command } from './command.js';
+import type { Command } from './command.ts';
 import type {
   CommandArgument,
   CommandArgumentKind,
@@ -9,7 +9,7 @@ import type {
   CommandOption,
   CommandOptionKind,
   ExecutionOptionValues,
-} from './types.js';
+} from './types.ts';
 
 /**
  * Internal interface for typing the return values of builder methods.

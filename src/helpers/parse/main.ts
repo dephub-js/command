@@ -1,9 +1,9 @@
-import { type Config, flattenChain } from '@/helpers/utils.js';
-import { validateInput } from '@/helpers/validate/input.js';
-import { validateConfig } from '@/helpers/validate/main.js';
+import { type Config, flattenChain } from '#/helpers/utils.ts';
+import { validateInput } from '#/helpers/validate/input.ts';
+import { validateConfig } from '#/helpers/validate/main.ts';
 
-import { parseCommands } from './command.js';
-import { type CommandSchema, parseInput, type ParseInput } from './input.js';
+import { parseCommands } from './command.ts';
+import { type CommandSchema, parseInput, type ParseInput } from './input.ts';
 
 export interface ParsedCommand extends ParseInput {
   chains: Config[];

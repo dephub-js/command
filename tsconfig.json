@@ -3,9 +3,11 @@
     "types": ["node"],
     "target": "ESNext",
     "module": "NodeNext",
+    "noEmit": true,
     "moduleResolution": "NodeNext",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
+    "allowImportingTsExtensions": true,
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
@@ -14,7 +16,7 @@
     "outDir": "dist",
     "rootDir": "./",
     "paths": {
-      "@/*": ["./src/*"]
+      "#/*": ["./src/*"]
     }
   },
   "include": ["src/**/*.ts", "globals.d.ts", "vite.config.ts"],

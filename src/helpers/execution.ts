@@ -1,6 +1,6 @@
 import { spawn } from 'node:child_process';
 
-import type { CommandExecution } from '@/core/types.js';
+import type { CommandExecution } from '#/core/types.ts';
 
 export async function execution(config: CommandExecution): Promise<void> {
   const { args = [], command, options = {} } = config;

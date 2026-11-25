@@ -2,7 +2,7 @@
 /* eslint-disable no-console */
 import process from 'node:process';
 
-import { Command, CommandError } from './index.js';
+import { Command, CommandError } from './index.ts';
 
 const cmd = new Command()
   .name(__PKG_NAME__.split('/')[1])

@@ -1,4 +1,4 @@
-import { $config, type Config } from '@/helpers/utils.js';
+import { $config, type Config } from '#/helpers/utils.ts';
 
 export function parseCommands(rootConfig: Config, tokens: string[]) {
   const chains = [rootConfig];

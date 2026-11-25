@@ -1,9 +1,9 @@
-import { CommandError } from '@/helpers/error.js';
+import { CommandError } from '#/helpers/error.ts';
 import {
   type Config,
   handlerVariadic,
   kebabToCamelCase,
-} from '@/helpers/utils.js';
+} from '#/helpers/utils.ts';
 
 export interface ParsedArgument {
   argument: Record<string, string | string[]>;

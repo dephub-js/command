@@ -1,8 +1,8 @@
-import type { CommandSchema, ParseInput } from '@/helpers/parse/input.js';
+import type { CommandSchema, ParseInput } from '#/helpers/parse/input.ts';
 
-import { CommandError } from '@/helpers/error.js';
-import { kebabToCamelCase } from '@/helpers/utils.js';
-import { validateChoices } from '@/helpers/validate/choices.js';
+import { CommandError } from '#/helpers/error.ts';
+import { kebabToCamelCase } from '#/helpers/utils.ts';
+import { validateChoices } from '#/helpers/validate/choices.ts';
 
 export function validateInput(schema: CommandSchema, input: ParseInput) {
   // Validate choices, required options and apply defaults

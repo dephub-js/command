@@ -7,9 +7,9 @@ import type {
   CommandConfig,
   CommandOption,
   CommandOptionKind,
-} from '@/core/types.js';
+} from '#/core/types.ts';
 
-import { $config } from './utils.js';
+import { $config } from './utils.ts';
 
 export function showHelp<
   Options extends CommandOption[] = [],

@@ -1,6 +1,6 @@
 import type { SpawnOptions } from 'node:child_process';
 
-import type { CommandBuilder } from './builder.js';
+import type { CommandBuilder } from './builder.ts';
 
 /**
  * Represents the structure of a command argument.

@@ -6,12 +6,12 @@ import type {
   CommandConfig,
   CommandInput,
   CommandOption,
-} from '@/core/types.js';
+} from '#/core/types.ts';
 
 import type { Config } from './utils.ts';
 
-import { execution } from './execution.js';
-import { parser } from './parse/main.js';
+import { execution } from './execution.ts';
+import { parser } from './parse/main.ts';
 
 export async function runner<
   Options extends CommandOption[] = [],

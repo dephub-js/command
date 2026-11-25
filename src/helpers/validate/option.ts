@@ -1,5 +1,5 @@
-import { CommandError } from '@/helpers/error.js';
-import { type Config } from '@/helpers/utils.js';
+import { CommandError } from '#/helpers/error.ts';
+import { type Config } from '#/helpers/utils.ts';
 
 export function validateOptions(options: Config['options']) {
   const optionNames = new Set<string>();
