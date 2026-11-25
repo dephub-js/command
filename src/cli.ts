@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
-import { description, name, version } from '@/helpers/pkg.js';
+import process from 'node:process';
 
 import { Command, CommandError } from './index.js';
 
 const cmd = new Command()
-  .name(name.split('/')[1] ?? 'command')
-  .description(description)
-  .version(version);
+  .name(__PKG_NAME__.split('/')[1])
+  .description(__PKG_DESCRIPTION__)
+  .version(__PKG_VERSION__);
 
 try {
   await cmd.run();

@@ -1,7 +1,7 @@
 {
   "name": "@dephub/command",
   "type": "module",
-  "version": "3.0.0",
+  "version": "3.0.1",
   "description": "A type-safe CLI command builder for Node.js, enabling easy creation of commands with arguments, options, subcommands, and handlers.",
   "types": "./dist/index.d.ts",
   "main": "./dist/index.js",
@@ -9,13 +9,17 @@
     "command": "./dist/cli.js"
   },
   "scripts": {
-    "prepublishOnly": "pnpm lint && pnpm check && pnpm build",
+    "prepublishOnly": "pnpm check && pnpm test && pnpm build",
     "release": "pnpm publish",
     "docs": "lineo md 'src/**/*.ts' --outFile code.md --outDir temp",
-    "check": "tsc --noEmit --skipLibCheck",
+    "test": "node --test",
+    "check": "pnpm fmt && pnpm lint && pnpm check-types",
+    "check-types": "tsc --noEmit --skipLibCheck",
     "lint": "eslint . --fix --max-warnings 0",
     "fmt": "prettier --write .",
     "clean": "rm -rf dist",
+    "prepack": "pnpm check && pnpm build",
+    "pack": "pnpm pack",
     "build": "vite build",
     "dev": "vite build -w --mode development"
   },
@@ -40,9 +44,6 @@
     "email": "dev@estarlincito.com",
     "url": "https://estarlincito.com"
   },
-  "engines": {
-    "node": ">=22.5.0"
-  },
   "files": [
     "LICENSE",
     "README.md",
@@ -60,19 +61,25 @@
   "publishConfig": {
     "access": "public"
   },
-  "packageManager": "pnpm@10.30.3",
   "devDependencies": {
     "@dephub/eslint-ts": "^1.0.5",
     "@dephub/glob": "^1.0.2",
-    "@dephub/path": "^1.0.2",
-    "@types/node": "^26.6.6",
-    "eslint": "^10.14.0",
-    "prettier": "^3.9.10",
+    "@dephub/path": "^2.0.0",
+    "@types/node": "^26.6.7",
+    "eslint": "^10.15.0",
+    "prettier": "^3.10.1",
     "typescript": "6.0.3",
-    "vite": "^8.3.5",
+    "vite": "^8.3.8",
     "vite-plugin-dts": "^5.1.2"
   },
   "dependencies": {
-    "@dephub/table": "^1.0.0"
-  }
+    "@dephub/table": "^1.0.1"
+  },
+  "imports": {
+    "#/*": "./src/*"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "packageManager": "pnpm@10.30.3"
 }
